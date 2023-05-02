@@ -257,6 +257,13 @@ library_c_args = [
 	'-DARAVIS_COMPILATION'
 	]
 
+library_link_args = []
+
+if xeno_config.found()
+	library_c_args += xeno_config_cflags_output.split()
+	library_link_args += xeno_config_ldflags_output.split()
+endif
+
 aravis_library = library ('aravis-@0@'.format (aravis_api_version),
 	library_sources, library_headers,
 	library_no_introspection_sources, library_no_introspection_headers, library_private_headers,
@@ -266,6 +273,7 @@ aravis_library = library ('aravis-@0@'.format (aravis_api_version),
 	soversion: '0',
 	dependencies: aravis_dependencies,
 	c_args: library_c_args,
+	link_args: library_link_args,
 	install: true)
 
 aravis_library_dependencies = declare_dependency (dependencies: aravis_dependencies,

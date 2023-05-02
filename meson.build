@@ -98,6 +98,15 @@ else # not Linux
 	packet_socket_enabled = false
 endif
 
+xenomai_option = get_option ('xenomai')
+xeno_config = find_program('xeno-config', required: xenomai_option)
+if xeno_config.found()
+  xeno_config_cflags = run_command(xeno_config, '--cflags', '--skin=alchemy', '--compat', check: true)
+  xeno_config_ldflags = run_command(xeno_config, '--ldflags', '--skin=alchemy', '--compat', '--no-auto-init', check: true)
+  xeno_config_cflags_output = xeno_config_cflags.stdout().strip()
+  xeno_config_ldflags_output = xeno_config_ldflags.stdout().strip()
+endif
+
 subdir ('src')
 subdir ('tests')
 
@@ -136,6 +145,7 @@ summary (
   'Viewer': viewer_enabled,
   'GStreamer plugin': gst_enabled,
   'USB support': usb_dep.found(),
+  'Xenomai support': xeno_config.found(),
   },
   section: 'Options'
 )
