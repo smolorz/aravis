@@ -1,6 +1,6 @@
 /* Aravis - Digital camera library
  *
- * Copyright © 2009-2016 Emmanuel Pacaud
+ * Copyright © 2009-2019 Emmanuel Pacaud
  * Copyright © 2023 KION Group
  *
  * This library is free software; you can redistribute it and/or
@@ -22,51 +22,31 @@
  * Author: Sebastian Smolorz <sebastian.smolorz@kiongroup.com>
  */
 
-#ifndef ARV_FEATURES_H
-#define ARV_FEATURES_H
+#ifndef ARV_RT_GV_STREAM_H
+#define ARV_RT_GV_STREAM_H
 
 #if !defined (ARV_H_INSIDE) && !defined (ARAVIS_COMPILATION)
 #error "Only <arv.h> can be included directly."
 #endif
 
-/**
- * ARAVIS_HAS_USB
- *
- * ARAVIS_HAS_USB is defined as 1 if aravis is compiled with USB support, 0 if not.
- *
- * Since: 0.6.0
- */
+#include <arvapi.h>
+#include <arvtypes.h>
+#include <arvstream.h>
+#include <arvgvstream.h>
 
-#define ARAVIS_HAS_USB @ARAVIS_HAS_USB@
+G_BEGIN_DECLS
 
-/**
- * ARAVIS_HAS_PACKET_SOCKET
- *
- * ARAVIS_HAS_PACKET_SOCKET is defined as 1 if aravis is compiled with packet socket support, 0 if not.
- *
- * Since: 0.6.0
- */
+#define ARV_TYPE_RT_GV_STREAM             (arv_rt_gv_stream_get_type ())
+ARV_API G_DECLARE_FINAL_TYPE (ArvRtGvStream, arv_rt_gv_stream, ARV, RT_GV_STREAM, ArvStream)
 
-#define ARAVIS_HAS_PACKET_SOCKET @ARAVIS_HAS_PACKET_SOCKET@
+ARV_API guint16		arv_rt_gv_stream_get_port	(ArvRtGvStream *gv_stream);
+ARV_API void		arv_rt_gv_stream_get_statistics	(ArvRtGvStream *gv_stream,
+							 guint64 *n_resent_packets,
+							 guint64 *n_missing_packets);
+ARV_API int		arv_rt_gv_stream_recv_frame	(ArvStream *gv_stream,
+							 /* buffer, */
+							 int64_t recv_frame_timeout);
 
-/**
- * ARAVIS_HAS_FAST_HEARTBEAT
- *
- * ARAVIS_HAS_FAST_HEARTBEAT is defined as 1 if aravis is compiled with fast hearbeat option, 0 if not.
- *
- * Since: 0.8.0
- */
-
-#define ARAVIS_HAS_FAST_HEARTBEAT @ARAVIS_HAS_FAST_HEARTBEAT@
-
-/**
- * ARAVIS_HAS_XENOMAI
- *
- * ARAVIS_HAS_XENOMAI is defined as 1 if aravis is compiled with Xenomai support, 0 if not.
- *
- * Since: x.x.x
- */
-
-#define ARAVIS_HAS_XENOMAI @ARAVIS_HAS_XENOMAI@
+G_END_DECLS
 
 #endif

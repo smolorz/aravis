@@ -216,6 +216,20 @@ if usb_dep.found()
 		]
 endif
 
+if xeno_config.found()
+	library_sources += [
+		'arvrtgvdevice.c',
+		'arvrtgvstream.c'
+	]
+	library_headers += [
+		'arvrtgvdevice.h',
+		'arvrtgvstream.h'
+	]
+	library_private_headers += [
+		'arvrtgvstreamprivate.h'
+	]
+endif
+
 library_enums = gnome.mkenums_simple ('arvenumtypes', decorator: 'ARV_API', header_prefix: '#include <arvapi.h>',
 				      sources: library_headers + library_no_introspection_headers)
 library_private_enums = gnome.mkenums_simple ('arvenumtypesprivate', sources: library_private_headers)
@@ -230,6 +244,7 @@ configure_file (input: 'arvapi.h.in', output: 'arvapi.h',
 
 features_library_config_data = configuration_data ()
 features_library_config_data.set10 ('ARAVIS_HAS_USB', usb_dep.found())
+features_library_config_data.set10 ('ARAVIS_HAS_XENOMAI', xeno_config.found())
 features_library_config_data.set10 ('ARAVIS_HAS_PACKET_SOCKET', packet_socket_enabled)
 features_library_config_data.set10 ('ARAVIS_HAS_FAST_HEARTBEAT', get_option ('fast-heartbeat'))
 configure_file (input: 'arvfeatures.h.in', output: 'arvfeatures.h',

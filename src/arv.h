@@ -110,6 +110,11 @@
 #include <arvuvstream.h>
 #endif
 
+#if ARAVIS_HAS_XENOMAI
+#include <arvrtgvdevice.h>
+#include <arvrtgvstream.h>
+#endif
+
 #include <arvversion.h>
 #include <arvzip.h>
 #include <arvxmlschema.h>
