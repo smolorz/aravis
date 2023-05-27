@@ -43,9 +43,16 @@ ARV_API guint16		arv_rt_gv_stream_get_port	(ArvRtGvStream *gv_stream);
 ARV_API void		arv_rt_gv_stream_get_statistics	(ArvRtGvStream *gv_stream,
 							 guint64 *n_resent_packets,
 							 guint64 *n_missing_packets);
+
 ARV_API int		arv_rt_gv_stream_recv_frame	(ArvStream *gv_stream,
-							 /* buffer, */
 							 int64_t recv_frame_timeout);
+ARV_API int		arv_rt_gv_stream_push_buffer	(ArvStream *stream, ArvBuffer *buffer);
+ARV_API ArvBuffer *	arv_rt_gv_stream_try_pop_buffer	(ArvStream *stream);
+ARV_API void		arv_rt_gv_stream_get_n_buffers	(ArvStream *stream,
+							 gint *n_input_buffers,
+							 gint *n_output_buffers);
+
+ARV_API int	arv_rt_gv_stream_prealloc_packet_data	(ArvStream *stream, ArvBuffer *buffer);
 
 G_END_DECLS
 
