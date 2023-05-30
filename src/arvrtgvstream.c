@@ -292,7 +292,7 @@ _process_data_leader (ArvGvStreamThreadData *thread_data,
 	frame->buffer->priv->frame_id = frame->frame_id;
 	frame->buffer->priv->chunk_endianness = G_BIG_ENDIAN;
 
-	frame->buffer->priv->system_timestamp_ns = g_get_real_time() * 1000LL;
+	frame->buffer->priv->system_timestamp_ns = rt_timer_read();
 	if (frame->buffer->priv->payload_type != ARV_BUFFER_PAYLOAD_TYPE_H264) {
 		if (G_LIKELY (thread_data->timestamp_tick_frequency != 0))
 			frame->buffer->priv->timestamp_ns = arv_gvsp_packet_get_timestamp (packet,
@@ -869,9 +869,9 @@ arv_rt_gv_stream_recv_frame(ArvStream *stream, int64_t recv_frame_timeout)
 		char *packet_buffers;
 
 		if (thread_data->n_frames > 0)
-			timeout_ns = thread_data->packet_timeout_us * 1000;
+			timeout_ns = thread_data->packet_timeout_us * 1000LL;
 		else
-			timeout_ns = ARV_GV_STREAM_POLL_TIMEOUT_US * 1000;
+			timeout_ns = ARV_GV_STREAM_POLL_TIMEOUT_US * 1000LL;
 
 		if (thread_data->last_timeout_ns != timeout_ns) {
 			if (rt_dev_ioctl(thread_data->socket, RTNET_RTIOC_TIMEOUT, &timeout_ns) < 0) {
@@ -885,7 +885,7 @@ arv_rt_gv_stream_recv_frame(ArvStream *stream, int64_t recv_frame_timeout)
 		count = rt_dev_recv(thread_data->socket, thread_data->packet_buffer,
 			thread_data->packet_buffer_size * ARV_GV_STREAM_NUM_BUFFERS, 0);
 		if (count > 0) {
-			time_us = g_get_monotonic_time ();
+			time_us = rt_timer_read() / 1000ULL;
 			for (packet_buffers = (char*)thread_data->packet_buffer; count > 0;
 						count -= thread_data->packet_buffer_size,
 						packet_buffers += thread_data->packet_buffer_size) {
@@ -898,7 +898,7 @@ arv_rt_gv_stream_recv_frame(ArvStream *stream, int64_t recv_frame_timeout)
 		} else {
 			if (count < 0)
 				arv_warning_stream_thread("rt_dev_recv() returned error %ld", count);
-			time_us = g_get_monotonic_time ();
+			time_us = rt_timer_read() / 1000ULL;
 			frame_completed = _check_frame_completion (thread_data, time_us, NULL);
                 }
 	} while (!frame_completed && rt_timer_read() - start_time < recv_frame_timeout);
@@ -1529,7 +1529,7 @@ arv_rt_gv_stream_finalize (GObject *object)
 
 		thread_data = priv->thread_data;
 
-		_flush_frames (thread_data, g_get_monotonic_time ());
+		_flush_frames (thread_data, rt_timer_read() / 1000ULL);
 
 		histogram_string = arv_histogram_to_string (thread_data->histogram);
 		arv_info_stream ("%s", histogram_string);
