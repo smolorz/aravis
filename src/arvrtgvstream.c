@@ -280,6 +280,8 @@ _process_data_leader (ArvGvStreamThreadData *thread_data,
 		      const ArvGvspPacket *packet,
 		      guint32 packet_id)
 {
+	struct timespec ts;
+
 	if (frame->buffer->priv->status != ARV_BUFFER_STATUS_FILLING)
 		return;
 
@@ -292,7 +294,10 @@ _process_data_leader (ArvGvStreamThreadData *thread_data,
 	frame->buffer->priv->frame_id = frame->frame_id;
 	frame->buffer->priv->chunk_endianness = G_BIG_ENDIAN;
 
-	frame->buffer->priv->system_timestamp_ns = rt_timer_read();
+	__RT(clock_gettime(CLOCK_REALTIME, &ts));
+	frame->buffer->priv->system_timestamp_ns =
+					(guint64)ts.tv_sec * 1000000000ULL +
+					(guint64)ts.tv_nsec;
 	if (frame->buffer->priv->payload_type != ARV_BUFFER_PAYLOAD_TYPE_H264) {
 		if (G_LIKELY (thread_data->timestamp_tick_frequency != 0))
 			frame->buffer->priv->timestamp_ns = arv_gvsp_packet_get_timestamp (packet,
